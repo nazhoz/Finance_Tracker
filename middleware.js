@@ -24,19 +24,21 @@ const clerk = clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   if (!userId && isProtectedRoute(req)) {
     const { redirectToSignIn } = await auth();
-
     return redirectToSignIn();
   }
 });
 
-export default createMiddleware(aj, clerk);
+// 🛠 Final middleware export that combines Arcjet and Clerk
+const middleware = createMiddleware(aj, clerk);
+export default middleware;
 
+// ✅ Ensure correct runtime and matcher settings
 export const config = {
+  runtime: "nodejs",
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Exclude static and internal assets
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    // Include API and tRPC routes
     "/(api|trpc)(.*)",
   ],
-  runtime: "nodejs",
 };
