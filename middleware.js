@@ -8,19 +8,19 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 const aj = arcjet({
-    key: process.env.ARCJET_KEY,
-    rules:[
-        shield({
-            mode:'LIVE'
-        }),
-        detectBot({
-            mode:'LIVE',
-            allow:["CATEGORY:SEARCH_ENGINE","GO_HTTP"]
-        })
-    ]
-})
+  key: process.env.ARCJET_KEY,
+  rules: [
+    shield({
+      mode: "LIVE",
+    }),
+    detectBot({
+      mode: "LIVE",
+      allow: ["CATEGORY:SEARCH_ENGINE", "GO_HTTP"],
+    }),
+  ],
+});
 
-const clerk =  clerkMiddleware(async (auth, req) => {
+const clerk = clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   if (!userId && isProtectedRoute(req)) {
     const { redirectToSignIn } = await auth();
@@ -29,7 +29,7 @@ const clerk =  clerkMiddleware(async (auth, req) => {
   }
 });
 
-export default createMiddleware(aj, clerk)
+export default createMiddleware(aj, clerk);
 
 export const config = {
   matcher: [
@@ -38,4 +38,5 @@ export const config = {
     // Always run for API routes
     "/(api|trpc)(.*)",
   ],
+  runtime: "nodejs",
 };
