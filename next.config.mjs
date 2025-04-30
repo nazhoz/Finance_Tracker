@@ -13,12 +13,22 @@ const nextConfig = {
       bodySizeLimit: "5mb",
     },
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    // Prevent __filename error in Edge
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        url: false,
+      };
+    }
+
     config.cache = {
-      type: 'filesystem',
+      type: "filesystem",
       compression: false,
-      // Removed buildDependencies
     };
+
     return config;
   },
 };
