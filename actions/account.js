@@ -18,7 +18,7 @@ const serializeTransaction = (obj) => {
 
 export async function updateDefaultAccount(accountId) {
   try {
-    const { userId } = await auth();
+    const { userId } = auth();
     if (!userId) throw new Error("Unauthorized");
 
     const user = await db.user.findUnique({
@@ -42,7 +42,11 @@ export async function updateDefaultAccount(accountId) {
       data: { isDefault: true },
     });
 
-    revalidatePath("/dashboard");
+    try {
+      revalidatePath("/dashboard");
+    } catch (err) {
+      console.warn("Revalidate error:", err.message);
+    }
 
     return { success: true, data: serializeTransaction(account) };
   } catch (error) {
@@ -135,8 +139,12 @@ export async function bulkDeleteTransactions(transactionIds) {
       }
     });
 
-    revalidatePath("/dashboard");
-    revalidatePath("/account/[id]");
+    try {
+      revalidatePath("/dashboard");
+      revalidatePath("/account/[id]");
+    } catch (err) {
+      console.warn("Revalidate error:", err.message);
+    }
 
     return { success: true };
   } catch (error) {
